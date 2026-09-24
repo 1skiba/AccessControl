@@ -25,13 +25,13 @@ class MFRC522:
             self.rst = Pin(gpioRst, Pin.OUT)
         else:
             self.rst = None
-        assert(gpioCs is not None, "Needs gpioCs") 
+        assert(gpioCs is not None, "Needs gpioCs") # TODO fails without cableSelect
         if gpioCs is not None:
             self.cs = Pin(gpioCs, Pin.OUT)
         else:
             self.cs = None
  
-        
+        # TODO CH rationalise which of these are referenced, which can be identical
         self.regBuf = bytearray(4)
         self.blockWriteBuf = bytearray(18)
         self.authBuf = bytearray(12)
@@ -54,7 +54,7 @@ class MFRC522:
             if uname()[0] == 'WiPy':
                 self.spi = SPI(0)
                 self.spi.init(SPI.MASTER, baudrate=1000000, pins=(sck, mosi, miso))
-            elif uname()[0] == 'esp8266': 
+            elif uname()[0] == 'esp8266': # TODO update to match https://github.com/cefn/avatap/blob/master/python/host/cockle.py #prepareHost()
                 self.spi = SPI(baudrate=100000, polarity=0, phase=0, sck=sck, mosi=mosi, miso=miso)
                 self.spi.init()
             else:
@@ -258,7 +258,7 @@ class MFRC522:
         return self._tocard(0x0E, buf)[0]
  
     # TODO this may well need to be implemented for vault to properly back out from a card session
-    
+    # TODO how, why, when is 'HaltA' needed? see https://github.com/cefn/micropython-mfrc522/issues/1
     def halt_a(self):
         pass
  

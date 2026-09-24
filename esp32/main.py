@@ -3,6 +3,7 @@ from machine import SPI
 import network
 import config
 import time
+import mqtt
 
 # WIFI
 wlan = network.WLAN(network.STA_IF)
@@ -14,11 +15,14 @@ def connect_to_wifi():
     while not wlan.isconnected() and timeout > 0:
         time.sleep(1)
         timeout -= 1
-        print("Łączenie z WIFI...")
-   
-   
+        print("wifi connecting...")
+    if wlan.isconnected():
+        print("connected, IP:", wlan.ifconfig()[0])
+    else:
+        print("error: failed to connect to wifi")
+        
 connect_to_wifi()
-print("Połączono, IP:", wlan.ifconfig()[0])
+mqtt.connect_mqtt()
 
 spi = SPI(2, baudrate=2500000, polarity=0, phase=0)
 # Using Hardware SPI pins:
@@ -36,6 +40,7 @@ while True:
     if wlan.isconnected() == False:
         print("error: no internet connection")
         connect_to_wifi()
+        mqtt.connect_mqtt()
         
     (stat, tag_type) = rdr.request(rdr.REQIDL)
     if stat == rdr.OK:
@@ -43,3 +48,4 @@ while True:
         if stat == rdr.OK:
             card_id = "%02x:%02x:%02x:%02x" % (raw_uid[0], raw_uid[1], raw_uid[2], raw_uid[3])
             print(card_id)
+            mqtt.publish_card(card_id)
