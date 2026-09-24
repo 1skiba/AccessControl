@@ -1,3 +1,4 @@
 .idea/
 AccessControlApi/obj/
 AccessControlApi/bin/
+esp32/config.py
