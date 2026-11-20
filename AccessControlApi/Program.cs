@@ -1,3 +1,6 @@
+using AccessControlApi.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace AccessControlApi;
 
 public class Program
@@ -6,10 +9,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddDbContext<AccessControlDbContext>(options =>
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("DefaultConnection")));
+        
         // Add services to the container.
 
         builder.Services.AddControllers();
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
 
         var app = builder.Build();
