@@ -65,5 +65,13 @@ public class AccessControlDbContext : DbContext
             e.HasIndex(x => new { x.ReaderId, x.Timestamp });
             e.HasIndex(x => new { x.UserId, x.Timestamp });
         });
+
+        modelBuilder.Entity<AccessRule>(e =>
+        {
+            e.HasOne(r => r.AccessGroup)
+                .WithMany(g => g.Rules)
+                .HasForeignKey(r => r.AccessGroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
