@@ -77,41 +77,41 @@ namespace AccessControlApi.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<bool>("Friday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Monday")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<bool>("Saturday")
-                        .HasColumnType("boolean");
+                    b.HasKey("Id");
+
+                    b.ToTable("AccessGroups");
+                });
+
+            modelBuilder.Entity("AccessControlApi.Entities.AccessRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<bool>("Sunday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Thursday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Tuesday")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("Wednesday")
-                        .HasColumnType("boolean");
-
                     b.HasKey("Id");
 
-                    b.ToTable("AccessGroups");
+                    b.HasIndex("AccessGroupId");
+
+                    b.ToTable("AccessRule");
                 });
 
             modelBuilder.Entity("AccessControlApi.Entities.Card", b =>
@@ -232,6 +232,17 @@ namespace AccessControlApi.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AccessControlApi.Entities.AccessRule", b =>
+                {
+                    b.HasOne("AccessControlApi.Entities.AccessGroup", "AccessGroup")
+                        .WithMany("Rules")
+                        .HasForeignKey("AccessGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccessGroup");
+                });
+
             modelBuilder.Entity("AccessControlApi.Entities.Card", b =>
                 {
                     b.HasOne("AccessControlApi.Entities.User", "User")
@@ -269,6 +280,8 @@ namespace AccessControlApi.Data.Migrations
 
             modelBuilder.Entity("AccessControlApi.Entities.AccessGroup", b =>
                 {
+                    b.Navigation("Rules");
+
                     b.Navigation("Users");
                 });
 

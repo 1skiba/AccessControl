@@ -18,16 +18,7 @@ namespace AccessControlApi.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Monday = table.Column<bool>(type: "boolean", nullable: false),
-                    Tuesday = table.Column<bool>(type: "boolean", nullable: false),
-                    Wednesday = table.Column<bool>(type: "boolean", nullable: false),
-                    Thursday = table.Column<bool>(type: "boolean", nullable: false),
-                    Friday = table.Column<bool>(type: "boolean", nullable: false),
-                    Saturday = table.Column<bool>(type: "boolean", nullable: false),
-                    Sunday = table.Column<bool>(type: "boolean", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false)
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,6 +37,28 @@ namespace AccessControlApi.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Readers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccessRule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccessGroupId = table.Column<int>(type: "integer", nullable: false),
+                    Day = table.Column<int>(type: "integer", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccessRule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccessRule_AccessGroups_AccessGroupId",
+                        column: x => x.AccessGroupId,
+                        principalTable: "AccessGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,6 +171,11 @@ namespace AccessControlApi.Data.Migrations
                 column: "ReadersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccessRule_AccessGroupId",
+                table: "AccessRule",
+                column: "AccessGroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cards_Uid",
                 table: "Cards",
                 column: "Uid",
@@ -199,6 +217,9 @@ namespace AccessControlApi.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AccessGroupReader");
+
+            migrationBuilder.DropTable(
+                name: "AccessRule");
 
             migrationBuilder.DropTable(
                 name: "Events");
