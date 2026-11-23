@@ -1,4 +1,6 @@
 using AccessControlApi.Data;
+using AccessControlApi.Mqtt;
+using AccessControlApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccessControlApi;
@@ -17,6 +19,10 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+        
+        builder.Services.Configure<MqttOptions>(builder.Configuration.GetSection("Mqtt"));
+        builder.Services.AddScoped<AccessService>();
+        builder.Services.AddHostedService<MqttListener>();
 
         var app = builder.Build();
 
